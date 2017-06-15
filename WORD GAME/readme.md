@@ -4,13 +4,19 @@
 
 ***
 #### 文件介绍
->mind.png: 游戏流程脑图
+>mind.png: 游戏流程脑
+
 >ps4a:精简版
->ps4b:加强版
->test:编程中测试输入
->test_ps4a:ps4a白盒测试
->test_ps4b:ps4b白盒测试
+
+>ps4b加版
+
+>test:编程中测试输
+
+>test_ps4a:ps4a白盒测
+
+>test_ps4b:ps4b白盒测
+
 >words.txt:单词库
 
-#####快去与电脑对战吧！
+##### 快去与电脑对战吧！
 
