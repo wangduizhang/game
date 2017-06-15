@@ -1,5 +1,6 @@
 #!/usr/bin/python
 #_*_coding:utf-8_*_
+#杂杂杂：检测代码正确性
 def for_(x):
 	for i in range(x):
 		if i == 2:

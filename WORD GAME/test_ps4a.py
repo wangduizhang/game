@@ -186,7 +186,7 @@ def test_isValidWord(wordList):
         print "SUCCESS: test_isValidWord()"
 
 
-wordList = loadWords()
+wordList = loadWords('words.txt')
 print "----------------------------------------------------------------------"
 print "Testing getWordScore..."
 test_getWordScore()

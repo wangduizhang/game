@@ -1,13 +1,13 @@
+# _*_coding:utf-8_*_
 from ps4a import *
 import time
+import copy
+import random
+global la_st2
+la_st2 = ''
 
-
-#
-#
-# Problem #6: Computer chooses a word
-#
-#
-def compChooseWord(hand, wordList, n):
+def maxcompChooseWord(hand, wordList, n):
+    # 电脑给出最优解
     """
     Given a hand and a wordList, find the word that gives 
     the maximum value score, and return it.
@@ -23,55 +23,136 @@ def compChooseWord(hand, wordList, n):
 
     returns: string or None
     """
-    # BEGIN PSEUDOCODE <-- Remove this comment when you code this function; do your coding within the pseudocode (leaving those comments in-place!)
-    # Create a new variable to store the maximum score seen so far (initially 0)
+    point = 0
+    maxword = ''
+    for word in wordList:
+        newword1 = copy.deepcopy(word)
+        newword2 = copy.deepcopy(word)
+        if isValidWord(newword1, hand, wordList):
+            p = getWordScore(newword2, n)
+            if p > point:
+                point = p
+                maxword = word
+    if point == 0:
+        return None
+    else:
+        return maxword, point
 
-    # Create a new variable to store the best word seen so far (initially None)  
+def compChooseWord(hand, wordList, n):
+    #电脑给出随机答案
+    wordlist = []
+    for word in wordList:
+        newword1 = copy.deepcopy(word)
+        if isValidWord(newword1, hand, wordList):
+            wordlist.append(word)
+    if wordlist == None:
+        return None
+    else:
+        x = random.randrange(len(wordlist))
+        word = wordlist[x]
+        newword2 = copy.deepcopy(word)
+        p = getWordScore(newword2, n)
+        return word, p
+    
+def outcome(usersumpoint,comsumpoint):
+    if usersumpoint > comsumpoint:
+        print '真厉害！你赢了！'
+    elif usersumpoint < comsumpoint:
+        print '虽然输了，但祝你下次好运！'
+    elif usersumpoint == comsumpoint:
+        print '差一点就赢了！下次加油！'
 
-    # For each word in the wordList
 
-        # If you can construct the word from your hand
-        # (hint: you can use isValidWord, or - since you don't really need to test if the word is in the wordList - you can make a similar function that omits that test)
-
-            # Find out how much making that word is worth
-
-            # If the score for that word is higher than your best score
-
-                # Update your best score, and best word accordingly
-
-
-    # return the best word you found.
-
-
-#
 # Problem #7: Computer plays a hand
 #
-def compPlayHand(hand, wordList, n):
-    """
-    Allows the computer to play the given hand, following the same procedure
-    as playHand, except instead of the user choosing a word, the computer 
-    chooses it.
 
-    1) The hand is displayed.
-    2) The computer chooses a word.
-    3) After every valid word: the word and the score for that word is 
-    displayed, the remaining letters in the hand are displayed, and the 
-    computer chooses another word.
-    4)  The sum of the word scores is displayed when the hand finishes.
-    5)  The hand finishes when the computer has exhausted its possible
-    choices (i.e. compChooseWord returns None).
- 
-    hand: dictionary (string -> int)
-    wordList: list (string)
-    n: integer (HAND_SIZE; i.e., hand size required for additional points)
+def playHandplus(hand, wordList, n):
+    global la_st2
     """
-    # TO DO ... <-- Remove this comment when you code this function
-    
-#
-# Problem #8: Playing a game
-#
-#
-def playGame(wordList):
+      hand: dictionary (string -> int)
+      wordList: list of lowercase strings
+      n: integer (HAND_SIZE; i.e., hand size required for additional points)
+    """
+    num = 1
+    usernewhand = copy.deepcopy(hand)
+    comnewhand =  copy.deepcopy(hand)
+    usersumpoint = 0
+    comsumpoint = 0
+    comanswer = True
+    print ' = ' * 20
+    print '你们获取的字母为:',
+    displayHand(hand),
+    while True:
+        print ' = ' * 20
+        print '***第 %d 轮***' % num
+        print '请思考你的答案'
+        print '电脑正在思考'
+        try:
+            if comanswer:
+                (comword, compoint) = compChooseWord(comnewhand, wordList, n)
+        except ValueError as e:
+            print '电脑实在想不出答案了'
+            comword = ''
+            compoint = 0
+            comanswer = False
+        if compoint != 0:
+            print '电脑思考结束'
+        print ' = ' * 20
+        print "输入你的答案（'.'结束游戏)"
+        order = raw_input('>>>')
+        if order == '.':
+            print '游戏结束，你最终的分数是：%d ' % usersumpoint
+            print '游戏结束，电脑最终的分数是：%d ' % comsumpoint
+            print ' = ' * 20
+            outcome(usersumpoint, comsumpoint)
+            print ' = ' * 20
+            playGameplus(wordList)
+            return
+        while True:
+            if isValidWord(order, usernewhand, wordList):
+                if comword:
+                    print '电脑的答案：%s' % comword
+                userword = order
+                userpoint = getWordScore(userword, n)
+                print '正确的单词！这局你的分数 %d' % userpoint
+                print '这局电脑的分数 %d' % compoint
+                print ' = ' * 20
+                num += 1
+                comsumpoint += compoint
+                usersumpoint += userpoint
+                break
+            else:
+                print '你输入的单词有误，请核查后重新输入！！'
+                print '输入 . 游戏结束'
+                order = raw_input('>>>')
+            if order == '.':
+                print '游戏结束，你最终的分数是：%d ' % usersumpoint
+                print '游戏结束，电脑最终的分数是：%d ' % comsumpoint
+                print ' = ' * 20
+                outcome(usersumpoint, comsumpoint)
+                print ' = ' * 20
+                playGameplus(wordList)
+                break
+        usernewhand = updateHand(usernewhand, userword)
+        comnewhand = updateHand(comnewhand, comword)
+
+        if calculateHandlen(usernewhand) == 0 or calculateHandlen(comnewhand) == 0:
+            print '游戏结束，你最终的分数是：%d ' % sumpoint
+            print '游戏结束，电脑最终的分数是：%d ' % comsumpoint
+            print ' = ' * 20
+            outcome(usersumpoint, comsumpoint)
+            print ' = ' * 20
+            break
+        print '电脑剩余字母：', 
+        displayHand(comnewhand),
+        print '电脑当前分数 %d ' % ( comsumpoint)
+        print ' = ' * 20
+        print '你剩余字母:', 
+        displayHand(usernewhand),
+        print '你当前分数：%d' % (usersumpoint)
+
+
+def playGameplus(wordList):
     """
     Allow the user to play an arbitrary number of hands.
  
@@ -95,15 +176,63 @@ def playGame(wordList):
 
     wordList: list (string)
     """
-    # TO DO... <-- Remove this comment when you code this function
-    print "playGame not yet implemented." # <-- Remove this when you code this function
+    #选择游戏模式
+    global la_st2
+    n = 0
+    print '请选择你想进行的模式：a：单人 c：人机 e: 退出游戏'
+    while True:
+        order9 = raw_input('>>>').lower()
+        if (order9 == 'a') or (order9 =='c'):
+            moudl = True
+            break
+        elif order9 == 'e':
+            moudl = False
+            print '游戏已退出'
+            print ' = ' * 20
+            break
+        else:
+            print '命令有误，请重新输入'
+    if moudl:
+        print 'n:新的游戏 r:重开上局 e:退出'
+        order8 = raw_input('>>>').lower()  
+        while True:
+            if order8 == 'n':
+                while True:
+                    n = raw_input('你想获取的字母数(大于4个):')
+                    while True:
+                        try:
+                            n =  int(n)
+                            if n > 4:
+                                break
+                        except ValueError,e:
+                            print '输入有误！'
+                    if order9 == 'a':
+                        hand = dealHand(n)
+                        la_st = copy.deepcopy(hand)
+                        playHand(hand, wordList, n)
+                    elif order9 == 'c':
+                        hand = dealHand(n)
+                        la_st = copy.deepcopy(hand)
+                        playHandplus(hand, wordList, n)
+            if order8 == 'r':
+                if la_st2 and (order9 == 'a'):
+                    playHand(la_st, wordList, n)
+                elif la_st2 and (order9 == 'c'):
+                    playHandplus(hand, wordList, n)
+                elif not la_st2:
+                    print '您没有上局存档，请重新输入指令：'
+                order8 = raw_input('>>>').lower()
+            if order8 == 'e':
+                print '游戏结束'
+                break
+            if not order8 in ['r','n','e'] or order8 == '':
+                print '请重新输入指令：'
+                order8 = raw_input('>>>').lower()
 
-        
-#
-# Build data structures used for entire session and play game
-#
+
+
 if __name__ == '__main__':
-    wordList = loadWords()
-    playGame(wordList)
+    wordList = loadWords('words.txt')
+    playGameplus(wordList)
 
 
