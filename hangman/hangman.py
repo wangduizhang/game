@@ -17,6 +17,8 @@ def chooseWord(wordlist):
     return random.choice(wordlist)
 def pand_(word):
     a_z = ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z')
+    if word.lower() == "help":
+        return ""
     if isinstance(word,str) and word.lower() in a_z:
         pass        
     else:
@@ -53,7 +55,6 @@ def cross_(rw):
         return True
     else:
         return False
- 
 wordlist = loadWords()
 secretWord = chooseWord(wordlist)
 wordcase = []
@@ -62,7 +63,7 @@ sw = ''
 i = 1
 
 
-while cross_(rw) and i < 9:
+while cross_(rw) and i < 20:
     word = raw_input('请输入你的第 %d 次猜想：'% i)
     word = pand_(word)
     word = in_case(word, wordcase)
@@ -76,8 +77,9 @@ while cross_(rw) and i < 9:
     print '当前进度：%s' % sw
     print '您猜过的字母：%s '% wordcase
 if not cross_(rw):
-    print '！恭喜你通关！'
+    print '！恭喜你通关'
 else:
+    print '正确答案是%s' % secretWord
     print '!没有猜出来呀，祝你下次好运!'
     
         
